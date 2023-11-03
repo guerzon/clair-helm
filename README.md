@@ -10,3 +10,5 @@ Helm chart for [Clair](https://github.com/quay/clair). Work in progress, please 
 ### Detailed documentation
 
 ## License
+
+See [LICENSE](./LICENSE).
