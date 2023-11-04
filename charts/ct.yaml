@@ -1,4 +1,3 @@
 # See https://github.com/helm/chart-testing#configuration
 remote: origin
-helm-extra-args: --timeout=500s
 target-branch: main
