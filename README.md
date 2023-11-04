@@ -23,7 +23,7 @@ Also, it's a passion project, so please bear with me.
 Add the repository:
 
 ```bash
-helm repo add clair https://guerzon.github.io/clair
+helm repo add clair https://guerzon.github.io/clair-helm
 ```
 
 List the chart:
