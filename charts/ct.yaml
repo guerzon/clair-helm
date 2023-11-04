@@ -1,6 +1,4 @@
 # See https://github.com/helm/chart-testing#configuration
 remote: origin
-chart-dirs:
-  - charts/clair
 helm-extra-args: --timeout=500s
 target-branch: main
