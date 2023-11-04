@@ -5,14 +5,30 @@
 replicaCount: 1
 
 image:
-  repository: nginx
+  repository: quay.io/projectquay/clair
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "4.7.2"
 
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
+
+# Database Configuration
+# this will be used for the indexer, notifier, and matcher databases
+database:
+  # Currently only postgresql is supported
+  type: "postgres"
+  host: ""
+  port: "5432"
+  # Database name
+  dbName: ""
+  user: ""
+  password: ""
+  uriOverride: ""
+  existingSecret: ""
+  existingSecretKey: ""
+  sslMode: "verify-full"
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -41,7 +57,11 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 80
+  port: 6060
+
+introspectionService:
+  type: ClusterIP
+  port: 8089
 
 ingress:
   enabled: false
@@ -74,25 +94,33 @@ resources: {}
 autoscaling:
   enabled: false
   minReplicas: 1
-  maxReplicas: 100
+  maxReplicas: 10
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
 # Additional volumes on the output Deployment definition.
-volumes: []
+volumes:
+- name: clair
+  configMap:
+    name: clair
+    items:
+    - key: config.yaml
+      path: config.yaml
 # - name: foo
 #   secret:
 #     secretName: mysecret
 #     optional: false
 
 # Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
-# - name: foo
-#   mountPath: "/etc/foo"
-#   readOnly: true
+volumeMounts:
+- name: clair
+  mountPath: "/config"
+  readOnly: true
 
 nodeSelector: {}
 
 tolerations: []
 
 affinity: {}
+
+logLevel: "info"

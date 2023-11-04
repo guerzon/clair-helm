@@ -40,14 +40,17 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+            - name: introspection
+              containerPort: {{ .Values.introspectionService.port }}
+              protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
-              port: http
+              path: /healthz
+              port: {{ .Values.introspectionService.port }}
           readinessProbe:
             httpGet:
-              path: /
-              port: http
+              path: /readyz
+              port: {{ .Values.introspectionService.port }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- with .Values.volumeMounts }}
