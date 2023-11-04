@@ -1,0 +1,19 @@
+
+replicaCount: 2
+
+autoscaling:
+  enabled: false
+
+database:
+  host: "clairdb-svc.clairdb"
+  dbName: "appdb"
+  user: "app"
+  password: "Supers3cret"
+  sslMode: "disable"
+
+logLevel: "debug-color"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi

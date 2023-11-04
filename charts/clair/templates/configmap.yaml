@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clair
+data:
+  config.yaml: |-
+    ---
+    http_listen_addr: ":{{ .Values.service.port }}"
+    introspection_addr: ":{{ .Values.introspectionService.port }}"
+    log_level: "{{ .Values.logLevel }}"
+    indexer:
+        connstring: "host={{ .Values.database.host }} user={{ .Values.database.user }} password={{ .Values.database.password }} dbname={{ .Values.database.dbName }} sslmode={{ .Values.database.sslMode }}"
+        scanlock_retry: 10
+        layer_scan_concurrency: 5
+        migrations: true
+    matcher:
+        connstring: "host={{ .Values.database.host }} user={{ .Values.database.user }} password={{ .Values.database.password }} dbname={{ .Values.database.dbName }} sslmode={{ .Values.database.sslMode }}"
+        indexer_addr: "http://localhost:{{ .Values.service.port }}/"
+        migrations: true
+        max_conn_pool: 100
+    matchers: {}
+    updaters:
+      sets:
+        - ubuntu
+        - debian
+        - rhel
+        - alpine
+        - osv
+    notifier:
+        connstring: "host={{ .Values.database.host }} user={{ .Values.database.user }} password={{ .Values.database.password }} dbname={{ .Values.database.dbName }} sslmode={{ .Values.database.sslMode }}"
+        migrations: true
+        indexer_addr: "http://localhost:{{ .Values.service.port }}/"
+        matcher_addr: "http://localhost:{{ .Values.service.port }}/"
+        poll_interval: "1m"
+        delivery_interval: "30s"
+        disable_summary: false
+    metrics:
+      name: "prometheus"
