@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "clair.fullname" . }}
+  name: {{ include "clair.fullname" . }}-indexer
   labels:
     {{- include "clair.labels" . | nindent 4 }}
 spec:
@@ -12,7 +12,39 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "clair.selectorLabels" . | nindent 4 }}
+    {{- include "clair.selectorLabelsIndexer" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "clair.fullname" . }}-matcher
+  labels:
+    {{- include "clair.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "clair.selectorLabelsMatcher" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "clair.fullname" . }}-notifier
+  labels:
+    {{- include "clair.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "clair.selectorLabelsNotifier" . | nindent 4 }}
 ---
 apiVersion: v1
 kind: Service
@@ -28,4 +60,4 @@ spec:
       protocol: TCP
       name: introspection
   selector:
-    {{- include "clair.selectorLabels" . | nindent 4 }}
+    {{- include "clair.selectorLabelsIndexer" . | nindent 4 }}

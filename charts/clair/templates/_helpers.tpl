@@ -35,7 +35,6 @@ Common labels
 */}}
 {{- define "clair.labels" -}}
 helm.sh/chart: {{ include "clair.chart" . }}
-{{ include "clair.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,8 +44,16 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "clair.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "clair.name" . }}
+{{- define "clair.selectorLabelsIndexer" -}}
+app.kubernetes.io/name: {{ include "clair.name" . }}-indexer
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+{{- define "clair.selectorLabelsMatcher" -}}
+app.kubernetes.io/name: {{ include "clair.name" . }}-matcher
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+{{- define "clair.selectorLabelsNotifier" -}}
+app.kubernetes.io/name: {{ include "clair.name" . }}-notifier
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 

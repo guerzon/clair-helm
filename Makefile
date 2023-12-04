@@ -5,4 +5,7 @@ lint:
 test:
 	ct install --config charts/ct.yaml
 
-.PHONY: lint test
+docs:
+	bash ./chart-docs.sh
+
+.PHONY: lint test docs
