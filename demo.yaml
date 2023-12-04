@@ -1,15 +1,23 @@
 
-replicaCount: 2
-
-autoscaling:
-  enabled: false
-
 database:
-  host: "clairdb-svc.clairdb"
-  dbName: "appdb"
-  user: "app"
-  password: "Supers3cret"
-  sslMode: "disable"
+  indexer:
+    host: "clairdb-svc.clairdb"
+    name: "indexerdb"
+    user: "app"
+    password: "Supers3cret"
+    sslMode: "disable"
+  matcher:
+    host: "clairdb-svc.clairdb"
+    name: "matcherdb"
+    user: "app"
+    password: "Supers3cret"
+    sslMode: "disable"
+  notifier:
+    host: "clairdb-svc.clairdb"
+    name: "notifierdb"
+    user: "app"
+    password: "Supers3cret"
+    sslMode: "disable"
 
 logLevel: "debug-color"
 
@@ -17,3 +25,66 @@ resources:
   requests:
     cpu: 100m
     memory: 128Mi
+
+notifier:
+  webhook:
+    target: "http://webhook-target/"
+    callback: "http://clair-notifier:6060/notifier/api/v1/notification/"
+
+# matchers:
+#   names:
+#     - alpine
+#     - aws
+#     - debian
+#     - oracle
+#     - photon
+#     - python
+#     - rhel
+#     - suse
+#     - ubuntu
+#     - crda
+#   config:
+#     python:
+#       ignore_vulns:
+#         - CVE-XYZ
+#         - CVE-ABC
+
+# updaters:
+#   sets:
+#     - alpine
+#     - aws
+#     - debian
+#     - oracle
+#     - photon
+#     - pyupio
+#     - rhel
+#     - suse
+#     - ubuntu
+#   config:
+#     ubuntu:
+#       security_tracker_url: http://security.url
+#       ignore_distributions: 
+#         - cosmic
+
+# notifier:
+#   webhook:
+#     target: "http://webhook-target/"
+#     callback: "http://clair-notifier:6060/notifier/api/v1/notification/"
+#   amqp:
+#     direct: true
+#     exchange:
+#       name: ""
+#       type: "direct"
+#       durable: true
+#       auto_delete: false
+#     uris: ["amqp://guest:guest@clair-rabbitmq:5672/"]
+#     routing_key: "notifications"
+#     callback: "http://clair-notifier/notifier/api/v1/notifications"
+
+# trace:
+#   name: "jaeger"
+#   probability: 1
+#   jaeger:
+#     agent:
+#       endpoint: "clair-jaeger:6831"
+#     service_name: "clair"

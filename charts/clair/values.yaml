@@ -15,20 +15,100 @@ nameOverride: ""
 fullnameOverride: ""
 
 # Database Configuration
-# this will be used for the indexer, notifier, and matcher databases
 database:
-  # Currently only postgresql is supported
-  type: "postgres"
-  host: ""
-  port: "5432"
-  # Database name
-  dbName: ""
-  user: ""
-  password: ""
-  uriOverride: ""
-  existingSecret: ""
-  existingSecretKey: ""
-  sslMode: "verify-full"
+  indexer:
+    # Override takes precedence over any of the succeeding configs.
+    # uriOverride: "host=clairdb user=pqgotest dbname=pqgotest sslmode=verify-full"
+    # uriOverride: "postgres://pqgotest:password@localhost/pqgotest?sslmode=verify-full"
+    host: ""
+    port: "5432"
+    name: ""
+    user: ""
+    password: ""
+    sslMode: "verify-full"
+  # matcher:
+  # notifier:
+
+auth: {}
+# auth:
+#   psk:
+#     key: 'c2VjcmV0'
+#     iss:
+#       - quay
+#       - clairctl
+
+# Indexer configuration
+indexer:
+  scanLockRetry: 10
+  layerScanConcurrency: 5
+  migrations: true
+  scanner: {}
+  airgap: false
+
+matcher:
+  migrations: true
+  period: "6h"
+  disableUpdaters: false
+  updateRetention: 10
+
+notifier:
+  migrations: true
+  indexerAddress: "http://clair-indexer:8080/"
+  matcherAddress: "http://clair-matcher:8080/"
+  pollInterval: "1m"
+  deliveryInterval: "30s"
+  disableSummary: false
+  webhook: {}
+    # target: "http://webhook-target/"
+    # callback: "http://clair-notifier:6060/notifier/api/v1/notification/"
+  amqp: {}
+  stomp: {}
+
+trace: {}
+# trace:
+#   name: "jaeger"
+#   probability: 1
+#   jaeger:
+#     agent:
+#       endpoint: "clair-jaeger:6831"
+#     service_name: "clair"
+
+matchers: {}
+# matchers:
+#   names:
+#     - alpine
+#     - aws
+#     - debian
+#     - python
+#     - rhel
+#     - ubuntu
+#   config:
+#     python:
+#       ignore_vulns:
+#         - CVE-XYZ
+#         - CVE-ABC
+
+updaters: {}
+# updaters:
+#   sets:
+#     - alpine
+#     - aws
+#     - debian
+#     - rhel
+#     - ubuntu
+#   config:
+#     ubuntu:
+#       security_tracker_url: http://security.url
+#       ignore_distributions: 
+#         - cosmic
+
+http:
+  address: ""
+  port: 6060
+
+introspection:
+  address: ""
+  port: 8089
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -57,7 +137,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 6060
+  port: 8080
 
 introspectionService:
   type: ClusterIP

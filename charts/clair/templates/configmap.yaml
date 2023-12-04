@@ -5,34 +5,79 @@ metadata:
 data:
   config.yaml: |-
     ---
-    http_listen_addr: ":{{ .Values.service.port }}"
-    introspection_addr: ":{{ .Values.introspectionService.port }}"
+    http_listen_addr: "{{ .Values.http.address }}:{{ .Values.http.port }}"
+    introspection_addr: "{{ .Values.introspection.address }}:{{ .Values.introspection.port }}"
+    {{- if .Values.auth }}
+    auth:
+      {{- toYaml .Values.auth | nindent 6 }}
+    {{- end }}
     log_level: "{{ .Values.logLevel }}"
     indexer:
-        connstring: "host={{ .Values.database.host }} user={{ .Values.database.user }} password={{ .Values.database.password }} dbname={{ .Values.database.dbName }} sslmode={{ .Values.database.sslMode }}"
-        scanlock_retry: 10
-        layer_scan_concurrency: 5
-        migrations: true
+        {{- if .Values.database.indexer.uriOverride }}
+        connstring: {{ .Values.database.indexer.uriOverride | quote }}
+        {{- else }}
+        connstring: "host={{ .Values.database.indexer.host }} user={{ .Values.database.indexer.user }} password={{ .Values.database.indexer.password }} dbname={{ .Values.database.indexer.name }} sslmode={{ .Values.database.indexer.sslMode }}"
+        {{- end }}
+        scanlock_retry: {{ .Values.indexer.scanLockRetry}}
+        layer_scan_concurrency: {{ .Values.indexer.layerScanConcurrency }}
+        migrations: {{ .Values.indexer.migrations }}
+        airgap: {{ .Values.indexer.airgap }}
     matcher:
-        connstring: "host={{ .Values.database.host }} user={{ .Values.database.user }} password={{ .Values.database.password }} dbname={{ .Values.database.dbName }} sslmode={{ .Values.database.sslMode }}"
-        indexer_addr: "http://localhost:{{ .Values.service.port }}/"
-        migrations: true
-        max_conn_pool: 100
-    matchers: {}
+        {{- if .Values.database.matcher.uriOverride }}
+        connstring: {{ .Values.database.matcher.uriOverride | quote }}
+        {{- else }}
+        connstring: "host={{ .Values.database.matcher.host }} user={{ .Values.database.matcher.user }} password={{ .Values.database.matcher.password }} dbname={{ .Values.database.matcher.name }} sslmode={{ .Values.database.matcher.sslMode }}"
+        {{- end }}
+        indexer_addr: {{ .Values.notifier.indexerAddress | quote }}
+        migrations: {{ .Values.matcher.migrations }}
+        period: {{ .Values.matcher.period | quote }}
+        disable_updaters: {{ .Values.matcher.disableUpdaters }}
+        update_retention: {{ .Values.matcher.updateRetention }}
+    {{- if .Values.matchers }}
+    matchers:
+      names:
+        {{- toYaml .Values.matchers.names | nindent 8 }}
+      {{- if .Values.matchers.config }}
+      config:
+        {{- toYaml .Values.matchers.config | nindent 8 }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.updaters }}
     updaters:
       sets:
-        - ubuntu
-        - debian
-        - rhel
-        - alpine
-        - osv
+        {{- toYaml .Values.updaters.sets | nindent 8 }}
+      {{- if .Values.updaters.config }}
+      config:
+        {{- toYaml .Values.updaters.config | nindent 8 }}
+      {{- end }}
+    {{- end }}
     notifier:
-        connstring: "host={{ .Values.database.host }} user={{ .Values.database.user }} password={{ .Values.database.password }} dbname={{ .Values.database.dbName }} sslmode={{ .Values.database.sslMode }}"
-        migrations: true
-        indexer_addr: "http://localhost:{{ .Values.service.port }}/"
-        matcher_addr: "http://localhost:{{ .Values.service.port }}/"
-        poll_interval: "1m"
-        delivery_interval: "30s"
-        disable_summary: false
+        {{- if .Values.database.notifier.uriOverride }}
+        connstring: {{ .Values.database.notifier.uriOverride | quote }}
+        {{- else }}
+        connstring: "host={{ .Values.database.notifier.host }} user={{ .Values.database.notifier.user }} password={{ .Values.database.notifier.password }} dbname={{ .Values.database.notifier.name }} sslmode={{ .Values.database.notifier.sslMode }}"
+        {{- end }}
+        migrations: {{ .Values.notifier.migrations }}
+        indexer_addr: {{ .Values.notifier.indexerAddress | quote }}
+        matcher_addr: {{ .Values.notifier.matcherAddress | quote }}
+        poll_interval: {{ .Values.notifier.pollInterval | quote }}
+        delivery_interval: {{ .Values.notifier.deliveryInterval | quote }}
+        disable_summary: {{ .Values.notifier.disableSummary }}
+        {{- if .Values.notifier.webhook }}
+        webhook:
+          {{- toYaml .Values.notifier.webhook | nindent 10 }}
+        {{- end }}
+        {{- if .Values.notifier.amqp }}
+        amqp:
+          {{- toYaml .Values.notifier.amqp | nindent 10 }}
+        {{- end }}
+        {{- if .Values.notifier.stomp }}
+        stomp:
+          {{- toYaml .Values.notifier.stomp | nindent 10 }}
+        {{- end }}
+    {{- if .Values.trace }}
+    trace:
+      {{- toYaml .Values.trace | nindent 6 }}
+    {{- end }}
     metrics:
       name: "prometheus"

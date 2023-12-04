@@ -12,10 +12,11 @@ If you happen to stumble upon this repo, please be aware that this is a work in 
 
 Also, it's a passion project, so please bear with me.
 
-## Features / TODO
+## Features
 
-1. Supports running on a single instance with the DB split per mode.
-2. Supports running multiple instances.
+The chart supports [distributed deployment](https://quay.github.io/clair/howto/deployment.html#distributed-deployment):
+
+![Distributed deployment](https://quay.github.io/clair/howto/clairv4_distributed_multi_db.png)
 
 ## Usage
 
@@ -25,7 +26,7 @@ Add the repository:
 helm repo add clair https://guerzon.github.io/clair-helm
 ```
 
-List the chart:
+Verify:
 
 ```bash
 helm search repo clair
@@ -39,9 +40,12 @@ If not using an ingresss:
 
 ```bash
 kubectl -n clair port-forward service/clair 6060:6060
+```
 
-## Test the vaultwarden/server image:
-clairctl report --host http://localhost:6060 vaultwarden/server
+Test the vaultwarden/server image:
+
+```bash
+clairctl report ubuntu:focal
 ```
 
 ## References
