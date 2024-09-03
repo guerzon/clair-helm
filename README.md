@@ -14,9 +14,8 @@ Also, it's a passion project, so please bear with me.
 
 ## Features / TODO
 
-1. Supports running in `combo` mode (default).
-2. Supports running on a single instance with the DB split per mode.
-3. Supports running multiple instances.
+1. Supports running on a single instance with the DB split per mode.
+2. Supports running multiple instances.
 
 ## Usage
 
